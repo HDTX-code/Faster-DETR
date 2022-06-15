@@ -91,7 +91,7 @@ if __name__ == '__main__':
     parser.add_argument('--weights_path', default='weights/loss_20220612222954/resnet50_FasterDETR_bestMap.pth',
                         type=str,
                         help='training weights')
-    parser.add_argument('--pic_path', default=r'/Home/atr2/homefun/zhf/faster_rcnn/faster_rcnn/data/VOCdevkit/VOC2007/JPEGImages/2009_003351.jpg', type=str,
+    parser.add_argument('--pic_path', default=r'D:\work\project\Faster-RCNN/data/VOCdevkit/VOC2007/JPEGImages/2009_003351.jpg', type=str,
                         help='pic_path')
     parser.add_argument('--device', default='cpu', help='device')
 
