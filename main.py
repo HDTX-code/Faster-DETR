@@ -107,9 +107,6 @@ def main(args):
     time_str = datetime.datetime.strftime(datetime.datetime.now(), '%Y%m%d%H%M%S')
     log_dir = os.path.join(args.sd, "loss_" + str(time_str))
 
-    # torch.cuda.set_device(args.GPU)
-    # device = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
-    # print(device)
     # 用来保存coco_info的文件
     results_file = os.path.join(log_dir,
                                 "results{}.txt".format(datetime.datetime.now().strftime('%Y%m%d%H%M%S')))
@@ -133,9 +130,6 @@ def main(args):
     random.seed(seed)
 
     model, criterion, post_processors = build_model(args, 21)
-    # if torch.cuda.device_count() > 1:
-    #     model = nn.DataParallel(model, device_ids=[0, 1, 2])
-    # model.to(device)
 
     if args.distributed:
         model = DistributedDataParallel(model.cuda())
@@ -235,11 +229,13 @@ def main(args):
             map_list.append(coco_info[1])
             lr_list.append(train_stats["lr"])
             if map_list[-1] > max_map:
-                torch.save(model.state_dict(), os.path.join(log_dir, "{}_FasterDETR_bestMap.pth".format(args.backbone)))
+                torch.save(model_without_ddp.state_dict(),
+                           os.path.join(log_dir, "{}_FasterDETR_bestMap.pth".format(args.backbone)))
                 print("Save best map {:.3f}".format(map_list[-1]))
                 max_map = map_list[-1]
             if loss_list[-1] < min_loss:
-                torch.save(model.state_dict(), os.path.join(log_dir, "{}_FasterDETR_bestLoss.pth".format(args.backbone)))
+                torch.save(model_without_ddp.state_dict(),
+                           os.path.join(log_dir, "{}_FasterDETR_bestLoss.pth".format(args.backbone)))
                 print("Save best loss {:.6f}".format(loss_list[-1]))
                 min_loss = loss_list[-1]
         with open(results_file, "a") as f:
@@ -258,5 +254,4 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser("SAM-DETR", parents=[get_args_parser()])
     args = parser.parse_args()
-    # os.environ['CUDA_VISIBLE_DEVICES'] = '1,5'
     main(args)

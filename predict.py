@@ -29,9 +29,9 @@ def main(args):
     assert os.path.exists(args.weights_path), "not found {} file.".format(args.weights_path)
     # 不小心保存的是多卡并行的权重，要去权重key掉前面的字符
     dict_p = torch.load(args.weights_path, map_location='cpu')
-    for key in list(dict_p.keys()):
-        # 修改参数名
-        dict_p[key[7:]] = dict_p.pop(key)
+    # for key in list(dict_p.keys()):
+    #     # 修改参数名
+    #     dict_p[key[7:]] = dict_p.pop(key)
     model.load_state_dict(dict_p)
     # print(model)
 
