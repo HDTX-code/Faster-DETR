@@ -29,9 +29,9 @@ def main(args):
     assert os.path.exists(args.weights_path), "not found {} file.".format(args.weights_path)
     # 不小心保存的是多卡并行的权重，要去权重key掉前面的字符
     dict_p = torch.load(args.weights_path, map_location='cpu')
-    # for key in list(dict_p.keys()):
-    #     # 修改参数名
-    #     dict_p[key[7:]] = dict_p.pop(key)
+    for key in list(dict_p.keys()):
+        # 修改参数名
+        dict_p[key[7:]] = dict_p.pop(key)
     model.load_state_dict(dict_p)
     # print(model)
 
@@ -72,7 +72,9 @@ def main(args):
             img_det_result = cv2.rectangle(img_det_result, (x1, y1), (x2, y2), colors[labels[i]], 2)
             img = cv2.putText(img_det_result, category_index[labels[i]] + ":" + str(math.floor(scores[i] * 100)) + "%",
                               (x1, y1-5), cv2.FONT_HERSHEY_COMPLEX, 0.3, colors[labels[i]], 1)
-        cv2.imwrite(os.path.join(args.save_dir, "test.jpg"), img)
+        # cv2.imwrite(os.path.join(args.save_dir, "test.jpg"), img)
+        cv2.imshow('predict', img)
+        cv2.waitKey()
 
 
 if __name__ == '__main__':
@@ -91,7 +93,7 @@ if __name__ == '__main__':
     parser.add_argument('--weights_path', default='weights/loss_20220612222954/resnet50_FasterDETR_bestMap.pth',
                         type=str,
                         help='training weights')
-    parser.add_argument('--pic_path', default=r'D:\work\project\Faster-RCNN/data/VOCdevkit/VOC2007/JPEGImages/2009_003351.jpg', type=str,
+    parser.add_argument('--pic_path', default=r'2009_003351.jpg', type=str,
                         help='pic_path')
     parser.add_argument('--device', default='cpu', help='device')
 
